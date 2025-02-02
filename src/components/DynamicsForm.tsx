@@ -94,6 +94,7 @@ export interface DynamicFormProps {
     detailDndItem?: string;
     detailDefault?: string;
   };
+  onChange?: (data: Record<string, any>) => void;
 }
 
 const DynamicsForm: React.FC<DynamicFormProps> = ({
@@ -103,6 +104,7 @@ const DynamicsForm: React.FC<DynamicFormProps> = ({
   customStyles,
   submitButton,
   isDetail,
+  onChange,
 }) => {
   const methods = useForm({
     defaultValues,
@@ -125,6 +127,12 @@ const DynamicsForm: React.FC<DynamicFormProps> = ({
     control,
     defaultValue: defaultValues,
   });
+
+  React.useEffect(() => {
+    if (onChange) {
+      onChange(formValues);
+    }
+  }, [formValues, onChange]);
 
   const getColumnClass = (column?: string) => {
     if (!column) return "flex-1 w-full"; // Tambahkan w-full untuk default

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DynamicForm from "./components/DynamicsForm";
 import {
   FaUser,
@@ -9,7 +9,7 @@ import {
   FaEye,
   FaSave,
 } from "react-icons/fa";
-import { useForm, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 const mockApiResponse = {
   namaPenjual: "John Doe",
@@ -62,13 +62,7 @@ const CustomButtons = ({ setIsDetail }: any) => {
 function App() {
   const [showSecretIcon, setShowSecretIcon] = useState(true);
   const [isDetail, setIsDetail] = useState(false);
-  const { getValues } = useForm();
-
-  const handleGetValues = (formName: string) => {
-    const values = getValues(formName);
-    console.log("Data formulir:", values);
-    return values;
-  };
+  const [agreement, setAgreement] = useState(false);
 
   const penjualanFormData: any = [
     [
@@ -170,33 +164,37 @@ function App() {
         type: "checkbox",
         validation: { required: true },
         validationMessage: { required: "Anda harus menyetujui syarat" },
-      }
-    ],
-    [
-      {
-        label: "Jenis Kelamin",
-        formName: "gender",
-        column: "1/2",
-        type: "radio",
-        option: [
-          { label: "Laki-laki", value: "male" },
-          { label: "Perempuan", value: "female" },
-          { label: "Lainnya", value: "other" },
-        ],
-        validation: { required: true },
-        validationMessage: { required: "Pilih jenis kelamin" },
-      },
-      {
-        label: "Status",
-        formName: "status",
-        column: "1/2",
-        type: "radio",
-        option: [
-          { label: "Menikah", value: "married" },
-          { label: "Belum Menikah", value: "single" },
-        ],
       },
     ],
+    ...(agreement
+      ? [
+          [
+            {
+              label: "Jenis Kelamin",
+              formName: "gender",
+              column: "1/2",
+              type: "radio",
+              option: [
+                { label: "Laki-laki", value: "male" },
+                { label: "Perempuan", value: "female" },
+                { label: "Lainnya", value: "other" },
+              ],
+              validation: { required: true },
+              validationMessage: { required: "Pilih jenis kelamin" },
+            },
+            {
+              label: "Status",
+              formName: "status",
+              column: "1/2",
+              type: "radio",
+              option: [
+                { label: "Menikah", value: "married" },
+                { label: "Belum Menikah", value: "single" },
+              ],
+            },
+          ],
+        ]
+      : []),
     [
       {
         label: "Volume Suara",
@@ -526,12 +524,23 @@ function App() {
     console.log(data);
   };
 
+  const handleFormChange = (data: any) => {
+    console.log("Data berubah:", data);
+
+    if (data?.agreement) {
+      setAgreement(true); // Set state agreement ke true
+    } else {
+      setAgreement(false); // Set state agreement ke false
+    }
+  };
+
   return (
     <div className="container mx-auto w-8/12 p-4">
       <DynamicForm
         isDetail={isDetail}
         formData={isDetail ? detailPenjualanFormData : penjualanFormData}
         onSubmit={handleSubmit}
+        onChange={handleFormChange}
         customStyles={{
           input: "bg-gray-100 p-2 rounded-lg",
           selection: "w-full p-0 rounded-lg",
